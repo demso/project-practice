@@ -1,15 +1,37 @@
+using Microsoft.EntityFrameworkCore;
+using NLog;
+using NLog.Web;
+using ProjectPractice.Database;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
-builder.Services.AddControllers();
+try {
+    builder.Logging.ClearProviders();
+    builder.Host.UseNLog();
+    
+    builder.Services.AddControllers();
+    
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+    
+    builder.Services.AddDbContext<StudentDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-var app = builder.Build();
+    WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
+    app.UseAuthorization();
 
-app.UseAuthorization();
+    app.MapControllers();
+    
+    logger.Info("Hello World!");
 
-app.MapControllers();
-
-app.Run();
+    app.Run();
+}
+catch (Exception ex) {
+    logger.Error(ex, "Stopped program because of exception");
+}
+finally {
+    LogManager.Shutdown();
+}
