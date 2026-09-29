@@ -21,40 +21,172 @@ namespace ProjectPractice.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ProjectPractice.Models.Discipline", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("discipline_id")
+                        .HasComment("Идентификатор записи дисциплины");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("c_is_deleted")
+                        .HasComment("Флаг мягкого удаления записи");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar")
+                        .HasColumnName("c_discipline_name")
+                        .HasComment("Название дисциплины");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cd_discipline_discipline_id");
+
+                    b.HasIndex(new[] { "Name" }, "idx_cd_discipline_c_discipline_name");
+
+                    b.ToTable("cd_discipline", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectPractice.Models.Grade", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("grade_id")
+                        .HasComment("Идентификатор записи оценки");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DisciplineId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("c_is_deleted")
+                        .HasComment("Флаг мягкого удаления записи");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int")
+                        .HasColumnName("c_grade_value")
+                        .HasComment("Значение: -1 — незачёт, 0 — нет оценки, 1 — зачёт, 2–5 — оценка");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cd_grade_grade_id");
+
+                    b.HasIndex(new[] { "DisciplineId" }, "idx_cd_grade_f_discipline_id");
+
+                    b.HasIndex(new[] { "StudentId" }, "idx_cd_grade_f_student_id");
+
+                    b.ToTable("cd_grade", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_cd_grade_c_grade_value", "c_grade_value IN (-1, 0, 1, 2, 3, 4, 5)");
+                        });
+                });
+
             modelBuilder.Entity("ProjectPractice.Models.Group", b =>
                 {
-                    b.Property<int>("GroupId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("group_id")
                         .HasComment("Идентификатор записи группы");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GroupId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("GroupName")
+                    b.Property<int>("Course")
+                        .HasColumnType("int")
+                        .HasColumnName("c_group_course")
+                        .HasComment("Курс (год обучения) группы");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("c_is_deleted")
+                        .HasComment("Флаг мягкого удаления записи");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar")
                         .HasColumnName("c_group_name")
                         .HasComment("Название группы");
 
-                    b.HasKey("GroupId")
+                    b.Property<int>("SpecialtyId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id")
                         .HasName("pk_cd_group_group_id");
 
-                    b.HasIndex(new[] { "GroupName" }, "idx_cd_group_c_group_name");
+                    b.HasIndex("SpecialtyId");
+
+                    b.HasIndex(new[] { "Course" }, "idx_cd_group_c_group_course");
+
+                    b.HasIndex(new[] { "Name" }, "idx_cd_group_c_group_name");
 
                     b.ToTable("cd_group", (string)null);
                 });
 
+            modelBuilder.Entity("ProjectPractice.Models.Specialty", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("specialty_id")
+                        .HasComment("Идентификатор записи специальности");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar")
+                        .HasColumnName("c_specialty_code")
+                        .HasComment("Код специальности");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("c_is_deleted")
+                        .HasComment("Флаг мягкого удаления записи");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar")
+                        .HasColumnName("c_specialty_title")
+                        .HasComment("Название специальности");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cd_specialty_specialty_id");
+
+                    b.HasIndex(new[] { "Code" }, "idx_cd_specialty_c_specialty_code")
+                        .IsUnique();
+
+                    b.ToTable("cd_specialty", (string)null);
+                });
+
             modelBuilder.Entity("ProjectPractice.Models.Student", b =>
                 {
-                    b.Property<int>("StudentId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("student_id")
                         .HasComment("Идентификатор записи студента");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StudentId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -66,33 +198,93 @@ namespace ProjectPractice.Migrations
                     b.Property<int>("GroupId")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("c_is_deleted")
+                        .HasComment("Флаг мягкого удаления записи");
+
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("c_student_lastname");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar")
+                        .HasColumnName("c_student_lastname")
+                        .HasComment("Фамилия студента");
 
-                    b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("StudentId")
+                    b.HasKey("Id")
                         .HasName("pk_cd_student_student_id");
 
-                    b.HasIndex(new[] { "GroupId" }, "idx_cd_student_fk_f_group_id");
+                    b.HasIndex(new[] { "LastName" }, "idx_cd_student_c_student_lastname");
+
+                    b.HasIndex(new[] { "GroupId" }, "idx_cd_student_f_group_id");
 
                     b.ToTable("cd_student", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectPractice.Models.Grade", b =>
+                {
+                    b.HasOne("ProjectPractice.Models.Discipline", "Discipline")
+                        .WithMany("Grades")
+                        .HasForeignKey("DisciplineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_cd_grade_f_discipline_id");
+
+                    b.HasOne("ProjectPractice.Models.Student", "Student")
+                        .WithMany("Grades")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_cd_grade_f_student_id");
+
+                    b.Navigation("Discipline");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("ProjectPractice.Models.Group", b =>
+                {
+                    b.HasOne("ProjectPractice.Models.Specialty", "Specialty")
+                        .WithMany("Groups")
+                        .HasForeignKey("SpecialtyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_cd_group_f_specialty_id");
+
+                    b.Navigation("Specialty");
                 });
 
             modelBuilder.Entity("ProjectPractice.Models.Student", b =>
                 {
                     b.HasOne("ProjectPractice.Models.Group", "Group")
-                        .WithMany()
+                        .WithMany("Students")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_f_group_id");
+                        .HasConstraintName("fk_cd_student_f_group_id");
 
                     b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("ProjectPractice.Models.Discipline", b =>
+                {
+                    b.Navigation("Grades");
+                });
+
+            modelBuilder.Entity("ProjectPractice.Models.Group", b =>
+                {
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("ProjectPractice.Models.Specialty", b =>
+                {
+                    b.Navigation("Groups");
+                });
+
+            modelBuilder.Entity("ProjectPractice.Models.Student", b =>
+                {
+                    b.Navigation("Grades");
                 });
 #pragma warning restore 612, 618
         }
