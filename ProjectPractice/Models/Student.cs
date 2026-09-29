@@ -8,8 +8,8 @@ public class Student
     public bool IsDeleted { get; set; }
 
     public int GroupId { get; set; }
-    public Group Group { get; set; } = null!;
+    public Group? Group { get; set; }
 
-    // Навигационное свойство для успеваемости
+    // навигационное свойство для оценок
     public List<Grade> Grades { get; set; } = new();
 }

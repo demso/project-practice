@@ -8,8 +8,8 @@ public class Group
     public bool IsDeleted { get; set; }
 
     public int SpecialtyId { get; set; }
-    public Specialty Specialty { get; set; } = null!;
+    public Specialty? Specialty { get; set; }
 
-    // Навигационное свойство
+    // навигационное свойство
     public List<Student> Students { get; set; } = new();
 }

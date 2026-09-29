@@ -38,6 +38,20 @@ namespace ProjectPractice.Migrations
                         .HasColumnName("c_is_deleted")
                         .HasComment("Флаг мягкого удаления записи");
 
+                    b.Property<bool>("IsHumanitarian")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("c_is_humanitarian")
+                        .HasComment("Флаг гуманитарного направления дисциплины");
+
+                    b.Property<bool>("IsTechnical")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("c_is_technical")
+                        .HasComment("Флаг технического направления дисциплины");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)

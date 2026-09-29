@@ -14,7 +14,7 @@ public class StudentDbContext(DbContextOptions<StudentDbContext> options) : DbCo
     {
         base.OnModelCreating(modelBuilder);
 
-        //Каждая таблица конфигурируется отдельно и явно (Fluent API)
+        // каждая таблица конфигурируется отдельно fluent api
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(StudentDbContext).Assembly);
     }
 }

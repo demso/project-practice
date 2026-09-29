@@ -7,26 +7,26 @@ namespace ProjectPractice.Database.Configurations;
 
 public class StudentConfiguration : IEntityTypeConfiguration<Student>
 {
-    //Название таблицы, которое будет отображаться в БД
+    // название таблицы в бд
     private const string TableName = "cd_student";
 
     public void Configure(EntityTypeBuilder<Student> builder)
     {
-        //Задаем первичный ключ
+        // первичный ключ
         builder
             .HasKey(p => p.Id)
             .HasName($"pk_{TableName}_student_id");
 
-        //Для целочисленного первичного ключа задаем автогенерацию (к каждой новой записи будет добавлять +1)
+        // автоинкремент для ключа
         builder.Property(p => p.Id)
             .ValueGeneratedOnAdd();
 
-        //Расписываем как будут называться колонки в БД, а так же их обязательность и тд
+        // названия колонок и обязательность
         builder.Property(p => p.Id)
             .HasColumnName("student_id")
             .HasComment("Идентификатор записи студента");
 
-        //HasComment добавит комментарий, который будет отображаться в СУБД (добавлять по желанию)
+        // комментарий будет виден в субд
         builder.Property(p => p.FirstName)
             .IsRequired()
             .HasColumnName("c_student_firstname")
@@ -45,7 +45,7 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
             .HasDefaultValue(false)
             .HasComment("Флаг мягкого удаления записи");
 
-        //Внешний ключ на группу: у студента одна группа, в группе много студентов
+        // внешний ключ на группу один ко многим
         builder.ToTable(TableName)
             .HasOne(p => p.Group)
             .WithMany(p => p.Students)
@@ -56,7 +56,7 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
         builder.ToTable(TableName)
             .HasIndex(p => p.GroupId, $"idx_{TableName}_f_group_id");
 
-        //Индекс по фамилии для фильтрации по ФИО
+        // индекс по фамилии для фильтра
         builder.ToTable(TableName)
             .HasIndex(p => p.LastName, $"idx_{TableName}_c_student_lastname");
 

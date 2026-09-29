@@ -7,17 +7,17 @@ namespace ProjectPractice.Database.Configurations;
 
 public class DisciplineConfiguration : IEntityTypeConfiguration<Discipline>
 {
-    //Название таблицы, которое будет отображаться в БД
+    // название таблицы в бд
     private const string TableName = "cd_discipline";
 
     public void Configure(EntityTypeBuilder<Discipline> builder)
     {
-        //Задаем первичный ключ
+        // первичный ключ
         builder
             .HasKey(p => p.Id)
             .HasName($"pk_{TableName}_discipline_id");
 
-        //Для целочисленного первичного ключа задаем автогенерацию (к каждой новой записи будет добавлять +1)
+        // автоинкремент для ключа
         builder.Property(p => p.Id)
             .ValueGeneratedOnAdd();
 
@@ -30,6 +30,18 @@ public class DisciplineConfiguration : IEntityTypeConfiguration<Discipline>
             .HasColumnName("c_discipline_name")
             .HasColumnType(ColumnType.String).HasMaxLength(200)
             .HasComment("Название дисциплины");
+
+        builder.Property(p => p.IsHumanitarian)
+            .IsRequired()
+            .HasColumnName("c_is_humanitarian")
+            .HasDefaultValue(false)
+            .HasComment("Флаг гуманитарного направления дисциплины");
+
+        builder.Property(p => p.IsTechnical)
+            .IsRequired()
+            .HasColumnName("c_is_technical")
+            .HasDefaultValue(false)
+            .HasComment("Флаг технического направления дисциплины");
 
         builder.Property(p => p.IsDeleted)
             .IsRequired()

@@ -7,6 +7,6 @@ public class Specialty
     public string Code { get; set; } = string.Empty;
     public bool IsDeleted { get; set; }
 
-    // Навигационное свойство
+    // навигационное свойство
     public List<Group> Groups { get; set; } = new();
 }

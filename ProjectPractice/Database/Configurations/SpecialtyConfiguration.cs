@@ -7,17 +7,17 @@ namespace ProjectPractice.Database.Configurations;
 
 public class SpecialtyConfiguration : IEntityTypeConfiguration<Specialty>
 {
-    //Название таблицы, которое будет отображаться в БД
+    // название таблицы в бд
     private const string TableName = "cd_specialty";
 
     public void Configure(EntityTypeBuilder<Specialty> builder)
     {
-        //Задаем первичный ключ
+        // первичный ключ
         builder
             .HasKey(p => p.Id)
             .HasName($"pk_{TableName}_specialty_id");
 
-        //Для целочисленного первичного ключа задаем автогенерацию (к каждой новой записи будет добавлять +1)
+        // автоинкремент для ключа
         builder.Property(p => p.Id)
             .ValueGeneratedOnAdd();
 

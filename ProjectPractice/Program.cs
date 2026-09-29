@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Web;
+using System.Text.Json.Serialization;
 using ProjectPractice.Database;
+using ProjectPractice.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +13,10 @@ try {
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
     
-    builder.Services.AddControllers();
+    // IgnoreCycles из-за AutoInclude навигаций, иначе рекурсивная сериализация
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
     
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -19,7 +24,12 @@ try {
     builder.Services.AddDbContext<StudentDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+    builder.Services.AddStudentServices();
+
     WebApplication app = builder.Build();
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
     app.UseAuthorization();
 

@@ -7,21 +7,21 @@ namespace ProjectPractice.Database.Configurations;
 
 public class GroupConfiguration : IEntityTypeConfiguration<Group>
 {
-    //Название таблицы, которое будет отображаться в БД
+    // название таблицы в бд
     private const string TableName = "cd_group";
 
     public void Configure(EntityTypeBuilder<Group> builder)
     {
-        //Задаем первичный ключ
+        // первичный ключ
         builder
             .HasKey(p => p.Id)
             .HasName($"pk_{TableName}_group_id");
 
-        //Для целочисленного первичного ключа задаем автогенерацию (к каждой новой записи будет добавлять +1)
+        // автоинкремент для ключа
         builder.Property(p => p.Id)
             .ValueGeneratedOnAdd();
 
-        //Расписываем как будут называться колонки в БД, а так же их обязательность и тд
+        // названия колонок и обязательность
         builder.Property(p => p.Id)
             .HasColumnName("group_id")
             .HasComment("Идентификатор записи группы");
@@ -44,7 +44,7 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
             .HasDefaultValue(false)
             .HasComment("Флаг мягкого удаления записи");
 
-        //Внешний ключ на специальность: у группы одна специальность, у специальности много групп
+        // внешний ключ на специальность один ко многим
         builder.ToTable(TableName)
             .HasOne(p => p.Specialty)
             .WithMany(p => p.Groups)
@@ -52,11 +52,11 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
             .HasConstraintName($"fk_{TableName}_f_specialty_id")
             .OnDelete(DeleteBehavior.Cascade);
 
-        //Индекс по названию группы для ускорения поиска
+        // индекс по названию для поиска
         builder.ToTable(TableName)
             .HasIndex(p => p.Name, $"idx_{TableName}_c_group_name");
 
-        //Индекс по курсу для фильтрации по году обучения
+        // индекс по курсу для фильтра
         builder.ToTable(TableName)
             .HasIndex(p => p.Course, $"idx_{TableName}_c_group_course");
     }

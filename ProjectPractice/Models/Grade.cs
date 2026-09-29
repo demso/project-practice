@@ -1,21 +1,18 @@
 namespace ProjectPractice.Models;
 
-/// <summary>
-/// Оценка студента по дисциплине.
-/// Зачёты эмулируются через оценки: -1 — незачёт, 0 — нет оценки, 1 — зачёт, 2–5 — оценка.
-/// </summary>
+// оценка студента по дисциплине, зачеты эмулируем через оценки
 public class Grade
 {
     public int Id { get; set; }
 
-    /// <summary>Допустимые значения: {-1, 0, 1, 2, 3, 4, 5}.</summary>
+    // допустимые значения -1 0 1 2 3 4 5
     public int Value { get; set; }
 
     public int StudentId { get; set; }
-    public Student Student { get; set; } = null!;
+    public Student? Student { get; set; }
 
     public int DisciplineId { get; set; }
-    public Discipline Discipline { get; set; } = null!;
+    public Discipline? Discipline { get; set; }
 
     public bool IsDeleted { get; set; }
 }
