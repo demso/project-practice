@@ -31,6 +31,9 @@ try {
     app.UseSwagger();
     app.UseSwaggerUI();
 
+    // редирект с корня на сваггер чтоб не было 404
+    app.MapGet("/", () => Results.Redirect("/swagger"));
+
     app.UseAuthorization();
 
     app.MapControllers();

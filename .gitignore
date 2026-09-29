@@ -6,3 +6,6 @@ riderModule.iml
 .idea
 logs
 /ProjectPractice.sln.DotSettings.user
+
+# nlog junk path on linux (backslash dir)
+ProjectPractice/C:*/
