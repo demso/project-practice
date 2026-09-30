@@ -3,6 +3,7 @@ using NLog;
 using NLog.Web;
 using System.Text.Json.Serialization;
 using ProjectPractice.Database;
+using ProjectPractice.Middlewares;
 using ProjectPractice.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,9 @@ try {
     builder.Services.AddStudentServices();
 
     WebApplication app = builder.Build();
+
+    // middleware для отлова необработанных исключений, отдает json с ошибкой
+    app.UseMiddleware<ExceptionHandlerMiddleware>();
 
     app.UseSwagger();
     app.UseSwaggerUI();
