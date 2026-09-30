@@ -70,7 +70,7 @@ public class GradeService : IGradeService
 
     public async Task<Grade> AddGradeAsync(Grade grade, CancellationToken cancellationToken = default)
     {
-        ValidateGradeValue(grade.Value);
+        GradeValueValidator.ThrowIfInvalid(grade.Value);
 
         await _dbContext.Grades.AddAsync(grade, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
@@ -79,7 +79,7 @@ public class GradeService : IGradeService
 
     public async Task<Grade?> UpdateGradeAsync(Grade grade, CancellationToken cancellationToken = default)
     {
-        ValidateGradeValue(grade.Value);
+        GradeValueValidator.ThrowIfInvalid(grade.Value);
 
         var existing = await _dbContext.Grades.FirstOrDefaultAsync(g => g.Id == grade.Id, cancellationToken);
         if (existing == null)
@@ -91,12 +91,5 @@ public class GradeService : IGradeService
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         return existing;
-    }
-
-    // допустимые значения -1 незачет, 0 нет оценки, 1 зачет, 2-5 оценка
-    private static void ValidateGradeValue(int value)
-    {
-        if (value < -1 || value > 5)
-            throw new ArgumentException($"Недопустимое значение оценки: {value}");
     }
 }
