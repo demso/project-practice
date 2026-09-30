@@ -8,5 +8,5 @@ public class GradeFilter
 
     // фильтр по курсу группы студента
     public int? Course { get; set; }
-    public bool? IsDeleted { get; set; }
+    public bool? IsDeleted { get; set; } = false;
 }

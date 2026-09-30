@@ -7,33 +7,25 @@ namespace ProjectPractice.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DisciplinesController : ControllerBase
-{
-    private readonly IDisciplineService _disciplineService;
-
-    public DisciplinesController(IDisciplineService disciplineService)
-    {
-        _disciplineService = disciplineService;
-    }
-
+public class DisciplinesController(IDisciplineService disciplineService) : ControllerBase {
     [HttpPost("list")]
     public async Task<IActionResult> GetDisciplinesList([FromBody] DisciplineFilter filter, CancellationToken cancellationToken)
     {
-        var disciplines = await _disciplineService.GetDisciplinesAsync(filter, cancellationToken);
+        var disciplines = await disciplineService.GetDisciplinesAsync(filter, cancellationToken);
         return Ok(disciplines);
     }
 
     [HttpPost]
     public async Task<IActionResult> AddDiscipline([FromBody] Discipline discipline, CancellationToken cancellationToken)
     {
-        var result = await _disciplineService.AddDisciplineAsync(discipline, cancellationToken);
+        var result = await disciplineService.AddDisciplineAsync(discipline, cancellationToken);
         return Ok(result);
     }
 
     [HttpPut]
     public async Task<IActionResult> UpdateDiscipline([FromBody] Discipline discipline, CancellationToken cancellationToken)
     {
-        var result = await _disciplineService.UpdateDisciplineAsync(discipline, cancellationToken);
+        var result = await disciplineService.UpdateDisciplineAsync(discipline, cancellationToken);
         if (result == null)
             return NotFound();
 
@@ -43,7 +35,7 @@ public class DisciplinesController : ControllerBase
     [HttpDelete("{disciplineId}")]
     public async Task<IActionResult> DeleteDiscipline(int disciplineId, CancellationToken cancellationToken)
     {
-        var deleted = await _disciplineService.DeleteDisciplineAsync(disciplineId, cancellationToken);
+        var deleted = await disciplineService.DeleteDisciplineAsync(disciplineId, cancellationToken);
         if (!deleted)
             return NotFound();
 

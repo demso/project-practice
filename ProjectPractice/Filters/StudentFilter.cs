@@ -6,5 +6,5 @@ public class StudentFilter
 
     // матчится по фамилии или имени
     public string? Fio { get; set; }
-    public bool? IsDeleted { get; set; }
+    public bool? IsDeleted { get; set; } = false;
 }
