@@ -2,26 +2,16 @@ using System.Net;
 
 namespace ProjectPractice.Middlewares;
 
-public class ExceptionHandlerMiddleware
-{
-    private readonly ILogger<ExceptionHandlerMiddleware> _logger;
-    private readonly RequestDelegate _next;
-
-    public ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
-
+public class ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger) {
     public async Task Invoke(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
         }
         catch (Exception exception)
         {
-            _logger.LogError("Exception", exception);
+            logger.LogError("Exception: {exc}", exception);
 
             var httpResponse = context.Response;
             httpResponse.ContentType = "application/json";
@@ -50,22 +40,4 @@ public class ResponseModel<T>
     public bool Succeeded { get; set; }
     public string? Message { get; set; }
     public List<string?>? Errors { get; set; }
-    public T? Data { get; set; }
-
-    public ResponseModel()
-    {
-    }
-
-    public ResponseModel(T data, string? message = null)
-    {
-        Succeeded = true;
-        Message = message;
-        Data = data;
-    }
-
-    public ResponseModel(string message)
-    {
-        Succeeded = true;
-        Message = message;
-    }
 }

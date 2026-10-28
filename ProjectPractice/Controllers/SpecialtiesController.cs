@@ -8,8 +8,8 @@ namespace ProjectPractice.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class SpecialtiesController(ISpecialtyService specialtyService) : ControllerBase {
-    [HttpPost("list")]
-    public async Task<IActionResult> GetSpecialtiesList([FromBody] SpecialtyFilter filter, CancellationToken cancellationToken)
+    [HttpGet("list")]
+    public async Task<IActionResult> GetSpecialtiesList([FromQuery] SpecialtyFilter filter, CancellationToken cancellationToken)
     {
         var specialties = await specialtyService.GetSpecialtiesAsync(filter, cancellationToken);
         return Ok(specialties);

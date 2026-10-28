@@ -8,8 +8,8 @@ namespace ProjectPractice.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class GroupsController(IGroupService groupService) : ControllerBase {
-    [HttpPost("list")]
-    public async Task<IActionResult> GetGroupsList([FromBody] GroupFilter filter, CancellationToken cancellationToken)
+    [HttpGet("list")]
+    public async Task<IActionResult> GetGroupsList([FromQuery] GroupFilter filter, CancellationToken cancellationToken)
     {
         var groups = await groupService.GetGroupsAsync(filter, cancellationToken);
         return Ok(groups);

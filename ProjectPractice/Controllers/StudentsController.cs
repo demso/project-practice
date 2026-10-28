@@ -8,8 +8,8 @@ namespace ProjectPractice.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class StudentsController(IStudentService studentService) : ControllerBase {
-    [HttpPost("list")]
-    public async Task<IActionResult> GetStudentsList([FromBody] StudentFilter filter, CancellationToken cancellationToken)
+    [HttpGet("list")]
+    public async Task<IActionResult> GetStudentsList([FromQuery] StudentFilter filter, CancellationToken cancellationToken)
     {
         var students = await studentService.GetStudentsAsync(filter, cancellationToken);
         return Ok(students);
@@ -35,6 +35,7 @@ public class StudentsController(IStudentService studentService) : ControllerBase
     [HttpDelete("{studentId}")]
     public async Task<IActionResult> DeleteStudent(int studentId, CancellationToken cancellationToken)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(studentId);
         var deleted = await studentService.DeleteStudentAsync(studentId, cancellationToken);
         if (!deleted)
             return NotFound();

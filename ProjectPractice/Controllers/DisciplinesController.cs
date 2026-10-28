@@ -8,8 +8,8 @@ namespace ProjectPractice.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class DisciplinesController(IDisciplineService disciplineService) : ControllerBase {
-    [HttpPost("list")]
-    public async Task<IActionResult> GetDisciplinesList([FromBody] DisciplineFilter filter, CancellationToken cancellationToken)
+    [HttpGet("list")]
+    public async Task<IActionResult> GetDisciplinesList([FromQuery] DisciplineFilter filter, CancellationToken cancellationToken)
     {
         var disciplines = await disciplineService.GetDisciplinesAsync(filter, cancellationToken);
         return Ok(disciplines);

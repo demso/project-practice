@@ -53,6 +53,9 @@ public class GradeService : IGradeService
         var grades = _dbContext.Grades
             .Where(g => !g.IsDeleted && g.Value >= 2);
 
+        if (filter.StudentId.HasValue)
+            grades = grades.Where(g => g.StudentId == filter.StudentId.Value);
+
         if (filter.GroupId.HasValue)
             grades = grades.Where(g => g.Student.GroupId == filter.GroupId.Value);
 
