@@ -42,4 +42,15 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 
         return Ok();
     }
+
+    // мягкое удаление по фио, возвращает сколько студентов удалили
+    [HttpDelete("by-fio")]
+    public async Task<IActionResult> DeleteStudentsByFio([FromQuery] string lastName, [FromQuery] string firstName, CancellationToken cancellationToken)
+    {
+        var count = await studentService.DeleteStudentsByFioAsync(lastName, firstName, cancellationToken);
+        if (count == 0)
+            return NotFound();
+
+        return Ok(count);
+    }
 }

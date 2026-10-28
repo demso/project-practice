@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectPractice.Database;
+using ProjectPractice.Dtos;
 using ProjectPractice.Filters;
 using ProjectPractice.Models;
 
@@ -7,7 +8,7 @@ namespace ProjectPractice.Services;
 
 public interface IDisciplineService
 {
-    Task<List<Discipline>> GetDisciplinesAsync(DisciplineFilter filter, CancellationToken cancellationToken = default);
+    Task<List<DisciplineDto>> GetDisciplinesAsync(DisciplineFilter filter, CancellationToken cancellationToken = default);
     Task<Discipline> AddDisciplineAsync(Discipline discipline, CancellationToken cancellationToken = default);
     Task<Discipline?> UpdateDisciplineAsync(Discipline discipline, CancellationToken cancellationToken = default);
     Task<bool> DeleteDisciplineAsync(int disciplineId, CancellationToken cancellationToken = default);
@@ -22,7 +23,7 @@ public class DisciplineService : IDisciplineService
         _dbContext = dbContext;
     }
 
-    public async Task<List<Discipline>> GetDisciplinesAsync(DisciplineFilter filter, CancellationToken cancellationToken = default)
+    public async Task<List<DisciplineDto>> GetDisciplinesAsync(DisciplineFilter filter, CancellationToken cancellationToken = default)
     {
         var disciplines = _dbContext.Disciplines.AsQueryable();
 
@@ -35,11 +36,20 @@ public class DisciplineService : IDisciplineService
         if (filter.IsDeleted.HasValue)
             disciplines = disciplines.Where(d => d.IsDeleted == filter.IsDeleted.Value);
 
-        return await disciplines.ToListAsync(cancellationToken);
+        return await disciplines.Select(d => new DisciplineDto
+        {
+            Id = d.Id,
+            Name = d.Name,
+            IsHumanitarian = d.IsHumanitarian,
+            IsTechnical = d.IsTechnical,
+            IsDeleted = d.IsDeleted
+        }).ToListAsync(cancellationToken);
     }
 
     public async Task<Discipline> AddDisciplineAsync(Discipline discipline, CancellationToken cancellationToken = default)
     {
+        discipline.Name = TextNormalizer.ForStorage(discipline.Name);
+
         await _dbContext.Disciplines.AddAsync(discipline, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return discipline;
@@ -51,7 +61,7 @@ public class DisciplineService : IDisciplineService
         if (existing == null)
             return null;
 
-        existing.Name = discipline.Name;
+        existing.Name = TextNormalizer.ForStorage(discipline.Name);
         existing.IsHumanitarian = discipline.IsHumanitarian;
         existing.IsTechnical = discipline.IsTechnical;
 

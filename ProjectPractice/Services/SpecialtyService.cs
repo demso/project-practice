@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectPractice.Database;
+using ProjectPractice.Dtos;
 using ProjectPractice.Filters;
 using ProjectPractice.Models;
 
@@ -7,7 +8,7 @@ namespace ProjectPractice.Services;
 
 public interface ISpecialtyService
 {
-    Task<List<Specialty>> GetSpecialtiesAsync(SpecialtyFilter filter, CancellationToken cancellationToken = default);
+    Task<List<SpecialtyDto>> GetSpecialtiesAsync(SpecialtyFilter filter, CancellationToken cancellationToken = default);
     Task<Specialty> AddSpecialtyAsync(Specialty specialty, CancellationToken cancellationToken = default);
     Task<Specialty?> UpdateSpecialtyAsync(Specialty specialty, CancellationToken cancellationToken = default);
     Task<bool> DeleteSpecialtyAsync(int specialtyId, CancellationToken cancellationToken = default);
@@ -22,24 +23,39 @@ public class SpecialtyService : ISpecialtyService
         _dbContext = dbContext;
     }
 
-    public async Task<List<Specialty>> GetSpecialtiesAsync(SpecialtyFilter filter, CancellationToken cancellationToken = default)
+    public async Task<List<SpecialtyDto>> GetSpecialtiesAsync(SpecialtyFilter filter, CancellationToken cancellationToken = default)
     {
         var specialties = _dbContext.Specialties.AsQueryable();
 
-        if (!string.IsNullOrEmpty(filter.Title))
-            specialties = specialties.Where(s => s.Title.Contains(filter.Title));
+        if (!string.IsNullOrWhiteSpace(filter.Title))
+        {
+            var title = TextNormalizer.ForSearch(filter.Title);
+            specialties = specialties.Where(s => s.Title.ToLower().Contains(title));
+        }
 
-        if (!string.IsNullOrEmpty(filter.Code))
-            specialties = specialties.Where(s => s.Code == filter.Code);
+        if (!string.IsNullOrWhiteSpace(filter.Code))
+        {
+            var code = TextNormalizer.ForSearch(filter.Code);
+            specialties = specialties.Where(s => s.Code.ToLower() == code);
+        }
 
         if (filter.IsDeleted.HasValue)
             specialties = specialties.Where(s => s.IsDeleted == filter.IsDeleted.Value);
 
-        return await specialties.ToListAsync(cancellationToken);
+        return await specialties.Select(s => new SpecialtyDto
+        {
+            Id = s.Id,
+            Title = s.Title,
+            Code = s.Code,
+            IsDeleted = s.IsDeleted
+        }).ToListAsync(cancellationToken);
     }
 
     public async Task<Specialty> AddSpecialtyAsync(Specialty specialty, CancellationToken cancellationToken = default)
     {
+        specialty.Title = TextNormalizer.ForStorage(specialty.Title);
+        specialty.Code = TextNormalizer.ForStorage(specialty.Code);
+
         await _dbContext.Specialties.AddAsync(specialty, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return specialty;
@@ -51,8 +67,8 @@ public class SpecialtyService : ISpecialtyService
         if (existing == null)
             return null;
 
-        existing.Title = specialty.Title;
-        existing.Code = specialty.Code;
+        existing.Title = TextNormalizer.ForStorage(specialty.Title);
+        existing.Code = TextNormalizer.ForStorage(specialty.Code);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         return existing;

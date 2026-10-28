@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectPractice.Database;
+using ProjectPractice.Dtos;
 using ProjectPractice.Filters;
 using ProjectPractice.Models;
 
@@ -7,7 +8,7 @@ namespace ProjectPractice.Services;
 
 public interface IGradeService
 {
-    Task<List<Grade>> GetGradesAsync(GradeFilter filter, CancellationToken cancellationToken = default);
+    Task<List<GradeDto>> GetGradesAsync(GradeFilter filter, CancellationToken cancellationToken = default);
     Task<double?> GetAverageGradeAsync(GradeAverageFilter filter, CancellationToken cancellationToken = default);
     Task<Grade> AddGradeAsync(Grade grade, CancellationToken cancellationToken = default);
     Task<Grade?> UpdateGradeAsync(Grade grade, CancellationToken cancellationToken = default);
@@ -22,12 +23,9 @@ public class GradeService : IGradeService
         _dbContext = dbContext;
     }
 
-    public async Task<List<Grade>> GetGradesAsync(GradeFilter filter, CancellationToken cancellationToken = default)
+    public async Task<List<GradeDto>> GetGradesAsync(GradeFilter filter, CancellationToken cancellationToken = default)
     {
-        var grades = _dbContext.Grades
-            .Include(g => g.Student)
-            .Include(g => g.Discipline)
-            .AsQueryable();
+        var grades = _dbContext.Grades.AsQueryable();
 
         if (filter.StudentId.HasValue)
             grades = grades.Where(g => g.StudentId == filter.StudentId.Value);
@@ -44,7 +42,18 @@ public class GradeService : IGradeService
         if (filter.IsDeleted.HasValue)
             grades = grades.Where(g => g.IsDeleted == filter.IsDeleted.Value);
 
-        return await grades.ToListAsync(cancellationToken);
+        // проекция в плоское дто, без вложенных студентов и дисциплин
+        return await grades.Select(g => new GradeDto
+        {
+            Id = g.Id,
+            Value = g.Value,
+            StudentId = g.StudentId,
+            StudentLastName = g.Student!.LastName,
+            StudentFirstName = g.Student.FirstName,
+            DisciplineId = g.DisciplineId,
+            DisciplineName = g.Discipline!.Name,
+            IsDeleted = g.IsDeleted
+        }).ToListAsync(cancellationToken);
     }
 
     public async Task<double?> GetAverageGradeAsync(GradeAverageFilter filter, CancellationToken cancellationToken = default)

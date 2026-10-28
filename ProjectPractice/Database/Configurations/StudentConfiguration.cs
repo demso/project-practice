@@ -59,8 +59,5 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
         // индекс по фамилии для фильтра
         builder.ToTable(TableName)
             .HasIndex(p => p.LastName, $"idx_{TableName}_c_student_lastname");
-
-        builder.Navigation(p => p.Group)
-            .AutoInclude();
     }
 }
