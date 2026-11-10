@@ -4,7 +4,7 @@ public class StudentFilter
 {
     public string? GroupName { get; set; }
 
-    // матчится по фамилии или имени
-    public string? Fio { get; set; }
+    public string? LastName { get; set; }
+    public string? FirstName { get; set; }
     public bool? IsDeleted { get; set; } = false;
 }

@@ -15,6 +15,14 @@ public class GradesController(IGradeService gradeService) : ControllerBase {
         return Ok(grades);
     }
 
+    // оценки студентов по фамилии, просто строка вида "2,4,3"
+    [HttpGet("values")]
+    public async Task<IActionResult> GetGradeValues([FromQuery] string lastName, CancellationToken cancellationToken)
+    {
+        var values = await gradeService.GetGradeValuesByStudentLastNameAsync(lastName, cancellationToken);
+        return Ok(values);
+    }
+
     // средний балл по студенту, по предмету в группе или по году, возвращает просто число
     [HttpGet("average")]
     public async Task<IActionResult> GetAverageGrade([FromQuery] GradeAverageFilter filter, CancellationToken cancellationToken)

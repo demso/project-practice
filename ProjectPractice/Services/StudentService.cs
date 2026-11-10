@@ -35,11 +35,16 @@ public class StudentService : IStudentService
             students = students.Where(s => s.Group!.Name.ToLower() == groupName);
         }
 
-        if (!string.IsNullOrWhiteSpace(filter.Fio))
+        if (!string.IsNullOrWhiteSpace(filter.LastName))
         {
-            var fio = TextNormalizer.ForSearch(filter.Fio);
-            students = students.Where(s =>
-                s.LastName.ToLower().Contains(fio) || s.FirstName.ToLower().Contains(fio));
+            var lastName = TextNormalizer.ForSearch(filter.LastName);
+            students = students.Where(s => s.LastName.ToLower().Contains(lastName));
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.FirstName))
+        {
+            var firstName = TextNormalizer.ForSearch(filter.FirstName);
+            students = students.Where(s => s.FirstName.ToLower().Contains(firstName));
         }
 
         if (filter.IsDeleted.HasValue)

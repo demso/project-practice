@@ -3,6 +3,9 @@ namespace ProjectPractice.Filters;
 public class GradeFilter
 {
     public int? StudentId { get; set; }
+
+    // по фамилии студента, регистр и пробелы не важны
+    public string? StudentLastName { get; set; }
     public int? GroupId { get; set; }
     public int? DisciplineId { get; set; }
 

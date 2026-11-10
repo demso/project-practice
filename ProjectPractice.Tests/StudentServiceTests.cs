@@ -54,7 +54,7 @@ public class StudentServiceTests
         await ctx.SaveChangesAsync();
 
         // Act
-        var result = await studentService.GetStudentsAsync(new StudentFilter { Fio = "Сидорова" });
+        var result = await studentService.GetStudentsAsync(new StudentFilter { LastName = "Сидорова" });
 
         // Assert
         Assert.Single(result);

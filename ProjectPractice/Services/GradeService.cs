@@ -10,6 +10,7 @@ public interface IGradeService
 {
     Task<List<GradeDto>> GetGradesAsync(GradeFilter filter, CancellationToken cancellationToken = default);
     Task<double?> GetAverageGradeAsync(GradeAverageFilter filter, CancellationToken cancellationToken = default);
+    Task<string> GetGradeValuesByStudentLastNameAsync(string lastName, CancellationToken cancellationToken = default);
     Task<Grade> AddGradeAsync(Grade grade, CancellationToken cancellationToken = default);
     Task<Grade?> UpdateGradeAsync(Grade grade, CancellationToken cancellationToken = default);
 }
@@ -29,6 +30,12 @@ public class GradeService : IGradeService
 
         if (filter.StudentId.HasValue)
             grades = grades.Where(g => g.StudentId == filter.StudentId.Value);
+
+        if (!string.IsNullOrWhiteSpace(filter.StudentLastName))
+        {
+            var lastName = TextNormalizer.ForSearch(filter.StudentLastName);
+            grades = grades.Where(g => g.Student!.LastName.ToLower().Contains(lastName));
+        }
 
         if (filter.GroupId.HasValue)
             grades = grades.Where(g => g.Student.GroupId == filter.GroupId.Value);
@@ -54,6 +61,19 @@ public class GradeService : IGradeService
             DisciplineName = g.Discipline!.Name,
             IsDeleted = g.IsDeleted
         }).ToListAsync(cancellationToken);
+    }
+
+    public async Task<string> GetGradeValuesByStudentLastNameAsync(string lastName, CancellationToken cancellationToken = default)
+    {
+        var normalizedLastName = TextNormalizer.ForSearch(lastName);
+
+        // только значения через запятую, например "2,4,3"
+        var values = await _dbContext.Grades
+            .Where(g => !g.IsDeleted && g.Student!.LastName.ToLower().Contains(normalizedLastName))
+            .Select(g => g.Value)
+            .ToListAsync(cancellationToken);
+
+        return string.Join(",", values);
     }
 
     public async Task<double?> GetAverageGradeAsync(GradeAverageFilter filter, CancellationToken cancellationToken = default)
