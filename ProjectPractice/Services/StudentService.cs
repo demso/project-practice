@@ -66,6 +66,11 @@ public class StudentService : IStudentService
         student.FirstName = TextNormalizer.ForStorage(student.FirstName);
         student.LastName = TextNormalizer.ForStorage(student.LastName);
 
+        if (!Student.IsValidName(student.LastName))
+            throw new ArgumentException($"Недопустимая фамилия студента: {student.LastName}");
+        if (!Student.IsValidName(student.FirstName))
+            throw new ArgumentException($"Недопустимое имя студента: {student.FirstName}");
+
         await _dbContext.Students.AddAsync(student, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return student;
@@ -80,6 +85,11 @@ public class StudentService : IStudentService
         existing.FirstName = TextNormalizer.ForStorage(student.FirstName);
         existing.LastName = TextNormalizer.ForStorage(student.LastName);
         existing.GroupId = student.GroupId;
+
+        if (!Student.IsValidName(existing.LastName))
+            throw new ArgumentException($"Недопустимая фамилия студента: {existing.LastName}");
+        if (!Student.IsValidName(existing.FirstName))
+            throw new ArgumentException($"Недопустимое имя студента: {existing.FirstName}");
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         return existing;

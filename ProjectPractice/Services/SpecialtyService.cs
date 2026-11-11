@@ -56,6 +56,9 @@ public class SpecialtyService : ISpecialtyService
         specialty.Title = TextNormalizer.ForStorage(specialty.Title);
         specialty.Code = TextNormalizer.ForStorage(specialty.Code);
 
+        if (!Specialty.IsValidCode(specialty.Code))
+            throw new ArgumentException($"Недопустимый код специальности: {specialty.Code}");
+
         await _dbContext.Specialties.AddAsync(specialty, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return specialty;
@@ -69,6 +72,9 @@ public class SpecialtyService : ISpecialtyService
 
         existing.Title = TextNormalizer.ForStorage(specialty.Title);
         existing.Code = TextNormalizer.ForStorage(specialty.Code);
+
+        if (!Specialty.IsValidCode(existing.Code))
+            throw new ArgumentException($"Недопустимый код специальности: {existing.Code}");
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         return existing;
