@@ -54,6 +54,9 @@ public class GroupService : IGroupService
     {
         group.Name = TextNormalizer.ForStorage(group.Name);
 
+        if (!Group.IsValidName(group.Name))
+            throw new ArgumentException($"Недопустимое название группы: {group.Name}");
+
         await _dbContext.Groups.AddAsync(group, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return group;
@@ -68,6 +71,9 @@ public class GroupService : IGroupService
         existing.Name = TextNormalizer.ForStorage(group.Name);
         existing.Course = group.Course;
         existing.SpecialtyId = group.SpecialtyId;
+
+        if (!Group.IsValidName(existing.Name))
+            throw new ArgumentException($"Недопустимое название группы: {existing.Name}");
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         return existing;
